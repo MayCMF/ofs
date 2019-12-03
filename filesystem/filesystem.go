@@ -101,7 +101,7 @@ func Truncate(filepath string, len int64) error {
 }
 
 // Create a read stream
-func CreateReadStream(filepath string) (stream io.Reader, err error) {
+func ReadStream(filepath string) (stream io.Reader, err error) {
 	var (
 		file *os.File
 	)
@@ -119,7 +119,7 @@ func CreateReadStream(filepath string) (stream io.Reader, err error) {
 }
 
 // Create a read stream
-func CreateWriteStream(filepath string) (stream io.Writer, err error) {
+func WriteStream(filepath string) (stream io.Writer, err error) {
 	var (
 		file *os.File
 	)

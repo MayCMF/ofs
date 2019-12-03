@@ -39,28 +39,28 @@ func (fileSystem FileSystem) Get(path string) (*os.File, error) {
 }
 
 // GetStream get file as stream
-func (fileSystem FileSystem) GetStream(path string) (io.ReadCloser, error) {
-	return os.Open(fileSystem.GetFullPath(path))
+func (fileSystem FileSystem) GetStream(path string) {
+	return ReadStream(fileSystem.GetFullPath(path))
 }
 
 // Put store a reader into given path
 func (fileSystem FileSystem) Put(path string, reader io.Reader) (*ofs.Object, error) {
 	var (
 		fullpath = fileSystem.GetFullPath(path)
-		err      = os.MkdirAll(filepath.Dir(fullpath), os.ModePerm)
+		err = CheckDir(filepath.Dir(fullpath))
 	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	dst, err := os.Create(fullpath)
+	dst, err := CheckFile(fullpath)
 
 	if err == nil {
 		if seeker, ok := reader.(io.ReadSeeker); ok {
 			seeker.Seek(0, 0)
 		}
-		_, err = io.Copy(dst, reader)
+		_, err = Copy(dst, reader)
 	}
 
 	return &ofs.Object{Path: path, Name: filepath.Base(path), StorageInterface: fileSystem}, err
@@ -68,10 +68,10 @@ func (fileSystem FileSystem) Put(path string, reader io.Reader) (*ofs.Object, er
 
 // Delete delete file
 func (fileSystem FileSystem) Delete(path string) error {
-	return os.Remove(fileSystem.GetFullPath(path))
+	return Remove(fileSystem.GetFullPath(path))
 }
 
-// List list all objects under current path
+// List of all objects under current path
 func (fileSystem FileSystem) List(path string) ([]*ofs.Object, error) {
 	var (
 		objects  []*ofs.Object
